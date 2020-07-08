@@ -15,9 +15,18 @@ trigger:
     exclude:
     - README.md
 
+# pr trigger: automatic builds on pull requests
+# targetting certain branches
+# default is all pull requests
+pr:
+- master
+
+# pool section defines what agent the job will run on
 pool:
+  # get a microsoft-hosted agent running the latest ubuntu linux.
   vmImage: 'ubuntu-latest'
 
+# job has steps
 steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
