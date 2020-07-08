@@ -42,14 +42,22 @@ jobs:
     inputs:
       command: 'test'
       projects: '$(solutionPath)'
-      arguments: '-c Release'
+      arguments: '-c Release --collect:"XPlat Code Coverage"'
       testRunTitle: 'ubuntu'
+
+  - task: PublishCodeCoverageResults@1
+    displayName: publish code coverage
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '**/TestResults/*/coverage.cobertura.xml'
+      failIfCoverageEmpty: true
 
   - script: dotnet publish -c Release -o ../publish
     displayName: dotnet publish
     workingDirectory: $(solutionPath)
 
   - task: AzureRmWebAppDeployment@4
+    displayName: azure app service deploy
     inputs:
       ConnectionType: 'AzureRM'
       azureSubscription: 'Pay-As-You-Go(0518cd5b-d389-4983-9496-cdcae31dcc60)'
@@ -76,13 +84,14 @@ jobs:
       feedsToUse: 'select'
 
   - task: VSBuild@1
-    displayName: Visual Studio build
+    displayName: visual studio build
     inputs:
       solution: '**\*.sln'
       platform: 'Any CPU'
       configuration: 'Release'
 
   - task: VSTest@2
+    displayName: visual studio test
     inputs:
       testSelector: 'testAssemblies'
       testAssemblyVer2: |
