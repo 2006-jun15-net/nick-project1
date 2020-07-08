@@ -21,6 +21,9 @@ trigger:
 pr:
 - master
 
+variables:
+  solutionPath: RestaurantReviews
+
 jobs:
 - job: build_linux
   # pool section defines what agent the job will run on
@@ -30,9 +33,29 @@ jobs:
 
   # job has steps
   steps:
-  - script: dotnet build
+  - script: dotnet build -c Release
     displayName: dotnet build
-    workingDirectory: RestaurantReviews
+    workingDirectory: $(solutionPath)
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test
+    inputs:
+      command: 'test'
+      projects: '$(solutionPath)'
+      arguments: '-c Release'
+      testRunTitle: 'ubuntu'
+
+  - script: dotnet publish -c Release -o ../publish
+    displayName: dotnet publish
+    workingDirectory: $(solutionPath)
+
+  - task: AzureRmWebAppDeployment@4
+    inputs:
+      ConnectionType: 'AzureRM'
+      azureSubscription: 'Pay-As-You-Go(0518cd5b-d389-4983-9496-cdcae31dcc60)'
+      appType: 'webApp'
+      WebAppName: '2006-restaurantreviews'
+      packageForLinux: '$(System.DefaultWorkingDirectory)/publish'
 
 - job: build_windows
 
@@ -56,5 +79,18 @@ jobs:
     displayName: Visual Studio build
     inputs:
       solution: '**\*.sln'
+      platform: 'Any CPU'
+      configuration: 'Release'
+
+  - task: VSTest@2
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: |
+        **\*test*.dll
+        !**\*TestAdapter.dll
+        !**\obj\**
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      codeCoverageEnabled: true
+      testRunTitle: 'windows'
       platform: 'Any CPU'
       configuration: 'Release'
