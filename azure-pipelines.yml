@@ -21,17 +21,29 @@ trigger:
 pr:
 - master
 
-# pool section defines what agent the job will run on
-pool:
-  # get a microsoft-hosted agent running the latest ubuntu linux.
-  vmImage: 'ubuntu-latest'
+jobs:
+- job: build_linux
+  # pool section defines what agent the job will run on
+  pool:
+    # get a microsoft-hosted agent running the latest ubuntu linux.
+    vmImage: 'ubuntu-latest'
 
-# job has steps
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+  # job has steps
+  steps:
+  - script: dotnet build
+    displayName: dotnet build
+    workingDirectory: RestaurantReviews
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- job: build_windows
+
+  pool:
+    vmImage: windows-latest
+  
+  steps:
+  - task: VSBuild@1
+    displayName: Visual Studio build
+    inputs:
+      solution: '**\*.sln'
+      platform: 'Any CPU'
+      configuration: 'Release'
+      restoreNugetPackages: true
