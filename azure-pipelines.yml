@@ -33,9 +33,26 @@ jobs:
 
   # job has steps
   steps:
+  - task: SonarCloudPrepare@1
+    displayName: sonarcloud prepare analysis
+    inputs:
+      SonarCloud: 'sonarcloud-escalonn'
+      organization: '2006-jun15-net'
+      scannerMode: 'MSBuild'
+      projectKey: '2006-jun15-net_nick-project1'
+      projectName: 'Nick project 1 Restaurant Reviews'
+
   - script: dotnet build -c Release
     displayName: dotnet build
     workingDirectory: $(solutionPath)
+
+  - task: SonarCloudAnalyze@1
+    displayName: sonarcloud run analysis
+
+  - task: SonarCloudPublish@1
+    displayName: publish sonarcloud result
+    inputs:
+      pollingTimeoutSec: '300'
 
   - task: DotNetCoreCLI@2
     displayName: dotnet test
