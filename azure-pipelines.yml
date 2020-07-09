@@ -41,6 +41,7 @@ jobs:
       scannerMode: 'MSBuild'
       projectKey: '2006-jun15-net_nick-project1'
       projectName: 'Nick project 1 Restaurant Reviews'
+      extraProperties: 'sonar.exclusions=**/lib/**'
 
   - script: dotnet build -c Release
     displayName: dotnet build
