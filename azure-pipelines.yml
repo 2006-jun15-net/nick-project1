@@ -33,6 +33,11 @@ jobs:
 
   # job has steps
   steps:
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '3.x'
+
   - task: SonarCloudPrepare@1
     displayName: sonarcloud prepare analysis
     inputs:
@@ -79,6 +84,7 @@ jobs:
 
   - task: AzureRmWebAppDeployment@4
     displayName: azure app service deploy
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     inputs:
       ConnectionType: 'AzureRM'
       azureSubscription: 'Pay-As-You-Go(0518cd5b-d389-4983-9496-cdcae31dcc60)'
