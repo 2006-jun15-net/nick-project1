@@ -50,14 +50,6 @@ jobs:
     displayName: dotnet build
     workingDirectory: $(solutionPath)
 
-  - task: SonarCloudAnalyze@1
-    displayName: sonarcloud run analysis
-
-  - task: SonarCloudPublish@1
-    displayName: publish sonarcloud result
-    inputs:
-      pollingTimeoutSec: '300'
-
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
@@ -65,6 +57,14 @@ jobs:
       projects: '$(solutionPath)'
       arguments: '-c Release --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover'
       testRunTitle: 'ubuntu'
+
+  - task: SonarCloudAnalyze@1
+    displayName: sonarcloud run analysis
+
+  - task: SonarCloudPublish@1
+    displayName: publish sonarcloud result
+    inputs:
+      pollingTimeoutSec: '300'
 
   - task: PublishCodeCoverageResults@1
     displayName: publish code coverage
