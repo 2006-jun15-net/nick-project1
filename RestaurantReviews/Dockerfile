@@ -30,7 +30,7 @@ COPY . ./
 # RUN dotnet sonarscanner end
 
 # publish to /app/publish
-RUN dotnet publish RestaurantReviews.WebUI -o ../publish
+RUN dotnet publish RestaurantReviews.WebUI -o ../publish --no-restore
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 
